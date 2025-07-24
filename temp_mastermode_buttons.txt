@@ -1,0 +1,42 @@
+  // Create mastermode floor buttons - First row: M1, M2, M3, M4
+  const mastermodeButtons1 = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('mastermode-m1')
+      .setLabel('M1 - Bonzo')
+      .setEmoji('<:Bonzo:1395336254417272944>')
+      .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId('mastermode-m2')
+      .setLabel('M2 - Scarf')
+      .setEmoji('<:Scarf:1395336330250027089>')
+      .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId('mastermode-m3')
+      .setLabel('M3 - Professor')
+      .setEmoji('<:professor:1395336298642014349>')
+      .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId('mastermode-m4')
+      .setLabel('M4 - Thorn')
+      .setEmoji('<a:Thorn:1395307380811759737>')
+      .setStyle(ButtonStyle.Danger)
+  );
+
+  // Second row: M5, M6, M7
+  const mastermodeButtons2 = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('mastermode-m5')
+      .setLabel('M5 - Livid')
+      .setEmoji('<:Livid:1395307384418865233>')
+      .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId('mastermode-m6')
+      .setLabel('M6 - Sadan')
+      .setEmoji('<:Sadan:1395307387224588430>')
+      .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId('mastermode-m7')
+      .setLabel('M7 - Necron')
+      .setEmoji('<:Necron:1395307389820866571>')
+      .setStyle(ButtonStyle.Danger)
+  );

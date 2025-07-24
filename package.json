@@ -1,0 +1,27 @@
+{
+  "name": "sbc-discord-bot-enhanced",
+  "version": "2.0.0",
+  "description": "A comprehensive Discord bot for managing Skyblock carry services with advanced features.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "node --test",
+    "lint": "eslint .",
+    "check-syntax": "node -c index.js && node -c config.js && node -c utils/ticketUtils.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.0.0",
+    "@supabase/supabase-js": "^2.0.0",
+    "openai": "^3.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "keywords": ["discord", "bot", "tickets", "skyblock", "hypixel", "gaming"],
+  "author": "SBC Team",
+  "license": "MIT"
+}
