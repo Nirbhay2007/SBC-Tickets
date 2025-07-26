@@ -971,7 +971,7 @@ async function createSlayerTicketChannel(interaction, slayerType) {
     const slayerTypeDisplay = slayerType.replace(/-/g, ' ').toUpperCase();
     const embed = new EmbedBuilder()
       .setTitle(`${slayerTypeDisplay} Ticket`)
-      .setDescription(`<@&${pingRole}>\n\nTicket opened by ${user}`)
+      .setDescription(`Ticket opened by ${user}`)
       .setColor('Purple')
       .setTimestamp();
 
@@ -1003,8 +1003,9 @@ async function createSlayerTicketChannel(interaction, slayerType) {
 
     const row = new ActionRowBuilder().addComponents(claimButton, closeButton);
 
-    // Send the embed with ping inside
+    // Send the ping separately so it actually pings, then the embed
     await channel.send({ 
+      content: `<@&${pingRole}>`,
       embeds: [embed], 
       components: [row] 
     });
@@ -1088,7 +1089,7 @@ async function createCrimsonTicketChannel(interaction, crimsonType) {
     const crimsonTypeDisplay = crimsonType.replace(/-/g, ' ').toUpperCase();
     const embed = new EmbedBuilder()
       .setTitle(`${crimsonTypeDisplay} Ticket`)
-      .setDescription(`<@&${pingRole}>\n\nTicket opened by ${user}`)
+      .setDescription(`Ticket opened by ${user}`)
       .setColor('Red')
       .setTimestamp();
 
@@ -1120,8 +1121,9 @@ async function createCrimsonTicketChannel(interaction, crimsonType) {
 
     const row = new ActionRowBuilder().addComponents(claimButton, closeButton);
 
-    // Send the embed with ping inside
+    // Send the ping separately so it actually pings, then the embed
     await channel.send({ 
+      content: `<@&${pingRole}>`,
       embeds: [embed], 
       components: [row] 
     });
@@ -1204,7 +1206,7 @@ async function createDungeonTicketChannel(interaction, dungeonFloor) {
     const dungeonFloorDisplay = dungeonFloor.replace(/-/g, ' ').toUpperCase();
     const embed = new EmbedBuilder()
       .setTitle(`${dungeonFloorDisplay} Dungeon Ticket`)
-      .setDescription(`<@&${pingRole}>\n\nTicket opened by ${user}`)
+      .setDescription(`Ticket opened by ${user}`)
       .setColor('Purple')
       .setTimestamp();
 
@@ -1236,8 +1238,9 @@ async function createDungeonTicketChannel(interaction, dungeonFloor) {
 
     const row = new ActionRowBuilder().addComponents(claimButton, closeButton);
 
-    // Send the embed with ping inside
+    // Send the ping separately so it actually pings, then the embed
     await channel.send({ 
+      content: `<@&${pingRole}>`,
       embeds: [embed], 
       components: [row] 
     });
@@ -1326,7 +1329,7 @@ async function createMastermodeTicketChannel(interaction, mastermodeFloor) {
     const mastermodeFloorDisplay = mastermodeFloor.replace(/-/g, ' ').toUpperCase();
     const embed = new EmbedBuilder()
       .setTitle(`${mastermodeFloorDisplay} Mastermode Ticket`)
-      .setDescription(`<@&${pingRole}>\n\nTicket opened by ${user}`)
+      .setDescription(`Ticket opened by ${user}`)
       .setColor('Purple')
       .setTimestamp();
 
@@ -1358,8 +1361,9 @@ async function createMastermodeTicketChannel(interaction, mastermodeFloor) {
 
     const row = new ActionRowBuilder().addComponents(claimButton, closeButton);
 
-    // Send the embed with ping inside
+    // Send the ping separately so it actually pings, then the embed
     await channel.send({ 
+      content: `<@&${pingRole}>`,
       embeds: [embed], 
       components: [row] 
     });
