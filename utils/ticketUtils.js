@@ -1,5 +1,5 @@
 import { EmbedBuilder, ButtonBuilder, ButtonStyle, ChannelType, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, AttachmentBuilder, MessageFlags } from 'discord.js';
-import { STAFF_ROLES, TICKET_CATEGORIES, CARRIER_ROLES, LOGGING_CONFIG, CARRY_PRICES, formatCoins } from '../config.js';
+import { STAFF_ROLES, TICKET_CATEGORIES, CARRIER_ROLES, LOGGING_CONFIG, CARRY_PRICES, formatCoins, TICKET_CATEGORIES_CONFIG } from '../config.js';
 import { recordCarryCompletion } from './carryTracker.js';
 import { sendReviewRequest, handleReviewButtonInteraction, handleReviewModalSubmission } from './reviewSystem.js';
 import { saveReview } from './simpleReviews.js';
@@ -19,7 +19,8 @@ async function checkExistingTicket(guild, userId) {
 export async function setupTicketEmbed(channel, category) {
   console.log(`Setting up ticket embed for category: ${category}`);
   
-  const categoryUpper = category.toUpperCase();
+  // Convert hyphens to underscores for TICKET_CATEGORIES lookup
+  const categoryUpper = category.toUpperCase().replace(/-/g, '_');
   
   // Validate category exists
   if (!TICKET_CATEGORIES[categoryUpper]) {
@@ -36,6 +37,12 @@ export async function setupTicketEmbed(channel, category) {
     await setupMastermodeTicketSystem(channel);
   } else if (categoryUpper === 'SUPPORT') {
     await setupSupportTicketSystem(channel);
+  } else if (categoryUpper === 'APPLY_FOR_GUILD') {
+    await setupApplyForGuildSystem(channel);
+  } else if (categoryUpper === 'APPLY_FOR_CARRIER') {
+    await setupApplyForCarrierSystem(channel);
+  } else if (categoryUpper === 'APPLY_FOR_STAFF') {
+    await setupApplyForStaffSystem(channel);
   } else {
     const embedColor = getEmbedColor(categoryUpper);
 
@@ -384,6 +391,138 @@ async function setupSupportTicketSystem(channel) {
   });
 }
 
+async function setupApplyForGuildSystem(channel) {
+  // Main apply for guild embed
+  const mainEmbed = new EmbedBuilder()
+    .setTitle('Apply to Join Our Guild')
+    .setDescription('Interested in joining our guild? Click below to start your application!')
+    .setColor('Green')
+    .setFooter({ text: 'SkyBlockC Guild Application System' });
+
+  // Guild application details embed
+  const guildEmbed = new EmbedBuilder()
+    .setTitle('Guild Application')
+    .setDescription(
+      '🏰 **Guild Membership Application**\n\n' +
+      '• Active Hypixel SkyBlock player\n' +
+      '• Follows guild rules and requirements\n' +
+      '• Participates in guild activities\n' +
+      '• Friendly and respectful member\n\n' +
+      '**Click below to submit your application!**'
+    )
+    .setColor('Green');
+
+  const applyButton = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('apply-guild')
+      .setLabel('Apply for Guild')
+      .setEmoji('🏰')
+      .setStyle(ButtonStyle.Success)
+  );
+
+  await channel.send({ embeds: [mainEmbed] });
+  await channel.send({ 
+    embeds: [guildEmbed], 
+    components: [applyButton] 
+  });
+}
+
+async function setupApplyForCarrierSystem(channel) {
+  // Main apply for carrier embed
+  const mainEmbed = new EmbedBuilder()
+    .setTitle('Apply to Become a Carrier')
+    .setDescription('Want to join our carry team? Apply to become an official carrier!')
+    .setColor('Purple')
+    .setFooter({ text: 'SkyBlockC Carrier Application System' });
+
+  // Carrier application details embed
+  const carrierEmbed = new EmbedBuilder()
+    .setTitle('Carrier Application')
+    .setDescription(
+      '⚔️ **Carrier Position Application**\n\n' +
+      '• Experienced in Dungeons/Slayers/Crimson\n' +
+      '• High skill level and game knowledge\n' +
+      '• Reliable and professional service\n' +
+      '• Available for regular carry sessions\n\n' +
+      '**Click below to submit your application!**'
+    )
+    .setColor('Purple');
+
+  const carrierButton = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('apply-carrier')
+      .setLabel('Apply to Become a Carrier')
+      .setEmoji('⚔️')
+      .setStyle(ButtonStyle.Primary)
+  );
+
+  await channel.send({ embeds: [mainEmbed] });
+  await channel.send({ 
+    embeds: [carrierEmbed], 
+    components: [carrierButton] 
+  });
+}
+
+async function setupApplyForStaffSystem(channel) {
+  // Main apply for staff embed
+  const mainEmbed = new EmbedBuilder()
+    .setTitle('Apply for Staff Position')
+    .setDescription('Interested in joining our staff team? Apply for a staff position!')
+    .setColor('Gold')
+    .setFooter({ text: 'SkyBlockC Staff Application System' });
+
+  // Staff application details embed
+  const staffEmbed = new EmbedBuilder()
+    .setTitle('Staff Application')
+    .setDescription(
+      '👑 **Staff Position Application**\n\n' +
+      '• Mature and responsible individual\n' +
+      '• Experience with Discord moderation\n' +
+      '• Active in the community\n' +
+      '• Excellent communication skills\n' +
+      '• Available for regular duties\n\n' +
+      '**Choose your preferred position:**'
+    )
+    .setColor('Gold');
+
+  const staffButtons1 = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('apply-staff-moderator')
+      .setLabel('Moderator')
+      .setEmoji('🛡️')
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId('apply-staff-helper')
+      .setLabel('Helper')
+      .setEmoji('🤝')
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
+      .setCustomId('apply-staff-manager')
+      .setLabel('Manager')
+      .setEmoji('📋')
+      .setStyle(ButtonStyle.Secondary)
+  );
+
+  const staffButtons2 = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId('apply-staff-admin')
+      .setLabel('Administrator')
+      .setEmoji('👑')
+      .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId('apply-staff-general')
+      .setLabel('General Staff')
+      .setEmoji('⭐')
+      .setStyle(ButtonStyle.Primary)
+  );
+
+  await channel.send({ embeds: [mainEmbed] });
+  await channel.send({ 
+    embeds: [staffEmbed], 
+    components: [staffButtons1, staffButtons2] 
+  });
+}
+
 export async function createTicketChannels(guild) {
   console.log('Starting createTicketChannels function');
   const categories = Object.keys(TICKET_CATEGORIES);
@@ -445,20 +584,21 @@ export async function handleButtonInteraction(interaction) {
   const customId = interaction.customId;
   console.log('Button interaction received:', customId);
   
-  if (customId.startsWith('open-ticket-')) {
-    const category = customId.replace('open-ticket-', '').toUpperCase();
-    
-    // Only handle valid categories
-    if (!['DUNGEON', 'SLAYER', 'CRIMSON', 'MASTERMODE', 'SUPPORT'].includes(category)) {
-      await interaction.reply({ 
-        content: 'This ticket type is no longer supported. Please contact an admin.', 
-        flags: MessageFlags.Ephemeral
-      });
-      return;
-    }
-    
-    const modal = createTicketModal(category);
-    await interaction.showModal(modal);
+  try {
+    if (customId.startsWith('open-ticket-')) {
+      const category = customId.replace('open-ticket-', '').toUpperCase();
+      
+      // Only handle valid categories
+      if (!['DUNGEON', 'SLAYER', 'CRIMSON', 'MASTERMODE', 'SUPPORT'].includes(category)) {
+        await interaction.reply({ 
+          content: 'This ticket type is no longer supported. Please contact an admin.', 
+          flags: MessageFlags.Ephemeral
+        });
+        return;
+      }
+      
+      const modal = createTicketModal(category);
+      await interaction.showModal(modal);
   } else if (customId.startsWith('slayer-')) {
     // Handle specific slayer type tickets
     const slayerType = customId.replace('slayer-', '');
@@ -484,6 +624,19 @@ export async function handleButtonInteraction(interaction) {
     const supportType = customId.replace('support-', '');
     const modal = createSupportModal(supportType);
     await interaction.showModal(modal);
+  } else if (customId.startsWith('apply-staff-')) {
+    // Handle staff application buttons
+    const staffPosition = customId.replace('apply-staff-', '');
+    const modal = createStaffApplicationModal(staffPosition);
+    await interaction.showModal(modal);
+  } else if (customId === 'apply-guild') {
+    // Handle guild application button
+    const modal = createGuildApplicationModal();
+    await interaction.showModal(modal);
+  } else if (customId === 'apply-carrier') {
+    // Handle carrier application button
+    const modal = createCarrierApplicationModal();
+    await interaction.showModal(modal);
   } else if (customId.startsWith('review-good-') || customId.startsWith('review-bad-')) {
     // Handle review button interactions (old complex system)
     await handleReviewButtonInteraction(interaction);
@@ -502,6 +655,28 @@ export async function handleButtonInteraction(interaction) {
     await handleTicketReopen(interaction);
   } else if (customId.startsWith('increment-carry-') || customId.startsWith('decrement-carry-')) {
     await handleCarryTrackerUpdate(interaction);
+  } else {
+    console.log('Unknown button interaction:', customId);
+    await interaction.reply({
+      content: 'This button interaction is not recognized. Please contact an admin.',
+      flags: MessageFlags.Ephemeral
+    });
+  }
+  
+  } catch (error) {
+    console.error('Error in handleButtonInteraction:', error);
+    
+    if (!interaction.replied && !interaction.deferred) {
+      await interaction.reply({
+        content: 'An error occurred while processing your request. Please try again.',
+        flags: MessageFlags.Ephemeral
+      });
+    } else if (interaction.deferred) {
+      await interaction.followUp({
+        content: 'An error occurred while processing your request. Please try again.',
+        flags: MessageFlags.Ephemeral
+      });
+    }
   }
 }
 
@@ -875,6 +1050,162 @@ function createTicketModal(category) {
   return modal;
 }
 
+function createStaffApplicationModal(staffPosition) {
+  const positionFormatted = staffPosition.charAt(0).toUpperCase() + staffPosition.slice(1);
+  
+  const modal = new ModalBuilder()
+    .setCustomId(`staff-application-modal-${staffPosition}`)
+    .setTitle(`${positionFormatted} Application - SBC`);
+
+  // Due to Discord's 5 component limit, we'll use the most important questions
+  const nameInput = new TextInputBuilder()
+    .setCustomId('minecraft_discord_name')
+    .setLabel('1. Minecraft and Discord Username')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('Please state both usernames')
+    .setRequired(true);
+
+  const ageInput = new TextInputBuilder()
+    .setCustomId('age')
+    .setLabel('2. How old are you?')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('Your age')
+    .setRequired(true);
+
+  const whyStaffInput = new TextInputBuilder()
+    .setCustomId('why_staff')
+    .setLabel('4. Why do you want to be staff in SBC?')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('Please note that good quality is better than high quantity.')
+    .setRequired(true);
+
+  const experienceInput = new TextInputBuilder()
+    .setCustomId('past_experience')
+    .setLabel('5. Past staff experience?')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('Any position. Please give us the position and significance.')
+    .setRequired(true);
+
+  const roleInput = new TextInputBuilder()
+    .setCustomId('staff_role')
+    .setLabel('9. What do you think your role is as staff?')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('Please note that good quality is better than high quantity.')
+    .setRequired(true);
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(nameInput),
+    new ActionRowBuilder().addComponents(ageInput),
+    new ActionRowBuilder().addComponents(whyStaffInput),
+    new ActionRowBuilder().addComponents(experienceInput),
+    new ActionRowBuilder().addComponents(roleInput)
+  );
+
+  return modal;
+}
+
+function createGuildApplicationModal() {
+  const modal = new ModalBuilder()
+    .setCustomId('guild-application-modal')
+    .setTitle('Guild Application - SBC');
+
+  const ignInput = new TextInputBuilder()
+    .setCustomId('ign')
+    .setLabel('Minecraft Username (IGN)')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('Enter your Minecraft username')
+    .setRequired(true);
+
+  const profileInput = new TextInputBuilder()
+    .setCustomId('profile')
+    .setLabel('SkyBlock Profile')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('Your main SkyBlock profile name')
+    .setRequired(true);
+
+  const netWorthInput = new TextInputBuilder()
+    .setCustomId('networth')
+    .setLabel('Estimated Net Worth')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('e.g., 500M, 1.2B, etc.')
+    .setRequired(true);
+
+  const whyJoinInput = new TextInputBuilder()
+    .setCustomId('why_join')
+    .setLabel('Why do you want to join our guild?')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('Tell us why you want to be part of SBC')
+    .setRequired(true);
+
+  const activityInput = new TextInputBuilder()
+    .setCustomId('activity')
+    .setLabel('How active are you on SkyBlock?')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('Daily hours, frequency, etc.')
+    .setRequired(true);
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(ignInput),
+    new ActionRowBuilder().addComponents(profileInput),
+    new ActionRowBuilder().addComponents(netWorthInput),
+    new ActionRowBuilder().addComponents(whyJoinInput),
+    new ActionRowBuilder().addComponents(activityInput)
+  );
+
+  return modal;
+}
+
+function createCarrierApplicationModal() {
+  const modal = new ModalBuilder()
+    .setCustomId('carrier-application-modal')
+    .setTitle('Carrier Application - SBC');
+
+  const ignInput = new TextInputBuilder()
+    .setCustomId('ign')
+    .setLabel('Minecraft Username (IGN)')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('Enter your Minecraft username')
+    .setRequired(true);
+
+  const specializationInput = new TextInputBuilder()
+    .setCustomId('specialization')
+    .setLabel('Specialization Area')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('Dungeons, Slayers, Crimson, Mastermode, etc.')
+    .setRequired(true);
+
+  const experienceInput = new TextInputBuilder()
+    .setCustomId('experience')
+    .setLabel('Experience & Stats')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('Your levels, gear, experience in chosen area')
+    .setRequired(true);
+
+  const availabilityInput = new TextInputBuilder()
+    .setCustomId('availability')
+    .setLabel('Availability')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('When are you usually online? Time zone?')
+    .setRequired(true);
+
+  const whyCarrierInput = new TextInputBuilder()
+    .setCustomId('why_carrier')
+    .setLabel('Why do you want to be a carrier?')
+    .setStyle(TextInputStyle.Paragraph)
+    .setPlaceholder('What motivates you to help other players?')
+    .setRequired(true);
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(ignInput),
+    new ActionRowBuilder().addComponents(specializationInput),
+    new ActionRowBuilder().addComponents(experienceInput),
+    new ActionRowBuilder().addComponents(availabilityInput),
+    new ActionRowBuilder().addComponents(whyCarrierInput)
+  );
+
+  return modal;
+}
+
 export async function handleModalSubmit(interaction) {
   const customId = interaction.customId;
   
@@ -896,6 +1227,13 @@ export async function handleModalSubmit(interaction) {
   } else if (customId.startsWith('support-modal-')) {
     const supportType = customId.replace('support-modal-', '');
     await createSupportTicketChannel(interaction, supportType);
+  } else if (customId.startsWith('staff-application-modal-')) {
+    const staffPosition = customId.replace('staff-application-modal-', '');
+    await createStaffApplicationTicket(interaction, staffPosition);
+  } else if (customId === 'guild-application-modal') {
+    await createGuildApplicationTicket(interaction);
+  } else if (customId === 'carrier-application-modal') {
+    await createCarrierApplicationTicket(interaction);
   } else if (customId.startsWith('review-modal-')) {
     // Handle review modal submissions
     await handleReviewModalSubmission(interaction);
@@ -925,6 +1263,7 @@ async function createSlayerTicketChannel(interaction, slayerType) {
     const channel = await guild.channels.create({
       name: channelName,
       type: ChannelType.GuildText,
+      parent: TICKET_CATEGORIES_CONFIG.SLAYER,
       permissionOverwrites: [
         {
           id: guild.roles.everyone,
@@ -1010,6 +1349,48 @@ async function createSlayerTicketChannel(interaction, slayerType) {
       components: [row] 
     });
     
+    // Add bruiser guide image if this is a bruiser ticket
+    if (slayerType.includes('bruiser')) {
+      const bruiserGuideEmbed = new EmbedBuilder()
+        .setTitle('🎯 HOW TO GET CARRIED IN BRUISER HIDEOUT')
+        .setDescription(
+          '**GEAR NEEDED:**\n' +
+          '• Mithril coat\n' +
+          '• Healing item (wand/sword)\n\n' +
+          '**INSTRUCTIONS:**\n' +
+          '1. When you summon the boss, go to the safe block shown in the picture and put on your mithril coat.\n\n' +
+          '2. During the boss fight, watch your health. If it drops, use your HEALING ITEM. Also, remember YOU DONT NEED TO GO FOR BEACONS\n\n' +
+          '3. When the boss has 70m HP or less, heads named nukebi fixations will appear and rise to eye level.\n\n' +
+          '**YOUR JOB IS TO LOOK AT THEM OR YOU WILL LIKELY DIE.**'
+        )
+        .setImage('https://media.discordapp.net/attachments/1157354044302577756/1213402369203904512/bruiser.png?ex=6885e304&is=68849184&hm=5f043342a91c0d9bd2c8ab47d19821398ff928821fa2b46ad3e346893ad79761&format=webp&quality=lossless&width=550&height=309&') // Bruiser guide image
+        .setColor('Orange')
+        .setFooter({ text: 'SBC Bruiser Carry Guide' });
+      
+      await channel.send({ embeds: [bruiserGuideEmbed] });
+    }
+    
+    // Add sepulture guide image if this is a sepulture ticket
+    if (slayerType.includes('sepulture')) {
+      const sepultureGuideEmbed = new EmbedBuilder()
+        .setTitle('🎯 HOW TO GET CARRIED IN SEPULTURE HIDEOUT')
+        .setDescription(
+          '**GEAR NEEDED:**\n' +
+          '• Mithril coat\n' +
+          '• Healing item (wand/sword)\n\n' +
+          '**INSTRUCTIONS:**\n' +
+          '1. When you summon the boss, go to the safe block shown in the picture and put on your mithril coat.\n\n' +
+          '2. During the boss fight, watch your health. If it drops, use your HEALING ITEM. Also, remember YOU DONT NEED TO GO FOR BEACONS\n\n' +
+          '3. When the boss has 70m HP or less, heads named nukebi fixations will appear and rise to eye level.\n\n' +
+          '**YOUR JOB IS TO LOOK AT THEM OR YOU WILL LIKELY DIE.**'
+        )
+        .setImage('https://media.discordapp.net/attachments/594323632839458835/1397364888598478878/SBZ.png?ex=68861237&is=6884c0b7&hm=6afaf8d5e952d18870ae081b32444f281c1f16f29ed1c5e47dca2adaab5c02a9&format=webp&quality=lossless&width=1200&height=675&') // Sepulture guide image
+        .setColor('Purple')
+        .setFooter({ text: 'SBC Sepulture Carry Guide' });
+      
+      await channel.send({ embeds: [sepultureGuideEmbed] });
+    }
+    
     await interaction.editReply({
       content: `Slayer ticket created successfully! ${channel}`
     });
@@ -1045,6 +1426,7 @@ async function createCrimsonTicketChannel(interaction, crimsonType) {
     const channel = await guild.channels.create({
       name: channelName,
       type: ChannelType.GuildText,
+      parent: TICKET_CATEGORIES_CONFIG.CRIMSON,
       permissionOverwrites: [
         {
           id: guild.roles.everyone,
@@ -1163,6 +1545,7 @@ async function createDungeonTicketChannel(interaction, dungeonFloor) {
     const channel = await guild.channels.create({
       name: channelName,
       type: ChannelType.GuildText,
+      parent: TICKET_CATEGORIES_CONFIG.DUNGEON,
       permissionOverwrites: [
         {
           id: guild.roles.everyone,
@@ -1280,6 +1663,7 @@ async function createMastermodeTicketChannel(interaction, mastermodeFloor) {
     const channel = await guild.channels.create({
       name: channelName,
       type: ChannelType.GuildText,
+      parent: TICKET_CATEGORIES_CONFIG.MASTERMODE,
       permissionOverwrites: [
         {
           id: guild.roles.everyone,
@@ -1389,13 +1773,11 @@ async function createSupportTicketChannel(interaction, supportType) {
     const member = interaction.member;
     
     // Find the SUPPORT category
-    const supportCategory = guild.channels.cache.find(c => 
-      c.type === 4 && c.name.toLowerCase() === config.TICKET_CATEGORIES.SUPPORT.toLowerCase()
-    );
+    const supportCategory = guild.channels.cache.get(TICKET_CATEGORIES_CONFIG.SUPPORT);
     
     if (!supportCategory) {
       await interaction.editReply({
-        content: 'Support category not found! Please contact an administrator.'
+        content: 'Support category not found! Please make sure SUPPORT_CATEGORY is set in your environment variables.'
       });
       return;
     }
@@ -1562,9 +1944,41 @@ async function createTicketChannel(interaction, category) {
     
     // Create ticket channel
     const channelName = `ticket-${category.toLowerCase()}-${user.username}`;
+    
+    // Get the appropriate category ID
+    let categoryId = null;
+    const categoryForSwitch = category.toUpperCase().replace(/-/g, '_');
+    switch (categoryForSwitch) {
+      case 'DUNGEON':
+        categoryId = TICKET_CATEGORIES_CONFIG.DUNGEON;
+        break;
+      case 'SLAYER':
+        categoryId = TICKET_CATEGORIES_CONFIG.SLAYER;
+        break;
+      case 'CRIMSON':
+        categoryId = TICKET_CATEGORIES_CONFIG.CRIMSON;
+        break;
+      case 'MASTERMODE':
+        categoryId = TICKET_CATEGORIES_CONFIG.MASTERMODE;
+        break;
+      case 'SUPPORT':
+        categoryId = TICKET_CATEGORIES_CONFIG.SUPPORT;
+        break;
+      case 'APPLY_FOR_GUILD':
+        categoryId = TICKET_CATEGORIES_CONFIG.APPLY_FOR_GUILD;
+        break;
+      case 'APPLY_FOR_CARRIER':
+        categoryId = TICKET_CATEGORIES_CONFIG.APPLY_FOR_CARRIER;
+        break;
+      case 'APPLY_FOR_STAFF':
+        categoryId = TICKET_CATEGORIES_CONFIG.APPLY_FOR_STAFF;
+        break;
+    }
+    
     const channel = await guild.channels.create({
       name: channelName,
       type: ChannelType.GuildText,
+      parent: categoryId,
       permissionOverwrites: [
         {
           id: guild.roles.everyone,
@@ -1641,6 +2055,322 @@ async function createTicketChannel(interaction, category) {
   }
 }
 
+async function createStaffApplicationTicket(interaction, staffPosition) {
+  try {
+    await interaction.deferReply({ ephemeral: true });
+    
+    const guild = interaction.guild;
+    const user = interaction.user;
+    
+    // Check if user already has an open ticket
+    if (await checkExistingTicket(guild, user.id)) {
+      await interaction.followUp({
+        content: 'You already have an open ticket! Please close it before creating a new one.',
+        ephemeral: true
+      });
+      return;
+    }
+    
+    // Get form answers
+    const answers = {
+      minecraftDiscord: interaction.fields.getTextInputValue('minecraft_discord_name'),
+      age: interaction.fields.getTextInputValue('age'),
+      whyStaff: interaction.fields.getTextInputValue('why_staff'),
+      pastExperience: interaction.fields.getTextInputValue('past_experience'),
+      staffRole: interaction.fields.getTextInputValue('staff_role')
+    };
+    
+    // Create ticket channel
+    const channelName = `application-staff-${staffPosition}-${user.username}`;
+    const channel = await guild.channels.create({
+      name: channelName,
+      type: ChannelType.GuildText,
+      parent: TICKET_CATEGORIES_CONFIG.APPLY_FOR_STAFF,
+      permissionOverwrites: [
+        {
+          id: guild.roles.everyone,
+          deny: ['ViewChannel'],
+        },
+        {
+          id: user.id,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.STAFF,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.ADMIN,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.MANAGER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        },
+        {
+          id: STAFF_ROLES.CO_OWNER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        },
+        {
+          id: STAFF_ROLES.OWNER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        }
+      ],
+    });
+    
+    // Create application embed
+    const embed = new EmbedBuilder()
+      .setTitle(`Staff Application - ${staffPosition.charAt(0).toUpperCase() + staffPosition.slice(1)} Position`)
+      .setColor('Gold')
+      .setTimestamp()
+      .addFields(
+        { name: '📝 Applicant', value: `<@${user.id}>`, inline: true },
+        { name: '🎯 Position', value: staffPosition.charAt(0).toUpperCase() + staffPosition.slice(1), inline: true },
+        { name: '📅 Applied', value: new Date().toLocaleDateString(), inline: true },
+        { name: '🎮 Minecraft & Discord Names', value: answers.minecraftDiscord, inline: false },
+        { name: '🎂 Age', value: answers.age, inline: true },
+        { name: '💭 Why Staff?', value: answers.whyStaff.length > 1000 ? answers.whyStaff.slice(0, 1000) + '...' : answers.whyStaff, inline: false },
+        { name: '📋 Past Experience', value: answers.pastExperience.length > 1000 ? answers.pastExperience.slice(0, 1000) + '...' : answers.pastExperience, inline: false },
+        { name: '⭐ Role Understanding', value: answers.staffRole.length > 1000 ? answers.staffRole.slice(0, 1000) + '...' : answers.staffRole, inline: false }
+      );
+    
+    // Ping staff roles
+    await channel.send(`<@&${STAFF_ROLES.OWNER}> <@&${STAFF_ROLES.CO_OWNER}> <@&${STAFF_ROLES.MANAGER}> New staff application received!`);
+    await channel.send({ embeds: [embed] });
+    
+    // Add close button for staff
+    const closeButton = new ButtonBuilder()
+      .setCustomId('close-ticket')
+      .setLabel('🔒 Close Application')
+      .setStyle(ButtonStyle.Danger);
+
+    const row = new ActionRowBuilder().addComponents(closeButton);
+    await channel.send({ components: [row] });
+    
+    await interaction.followUp({
+      content: `Staff application submitted successfully! ${channel}`,
+      ephemeral: true
+    });
+    
+  } catch (error) {
+    console.error('Error creating staff application ticket:', error);
+    await interaction.followUp({
+      content: 'An error occurred while creating your application.',
+      ephemeral: true
+    });
+  }
+}
+
+async function createGuildApplicationTicket(interaction) {
+  try {
+    await interaction.deferReply({ ephemeral: true });
+    
+    const guild = interaction.guild;
+    const user = interaction.user;
+    
+    // Check if user already has an open ticket
+    if (await checkExistingTicket(guild, user.id)) {
+      await interaction.followUp({
+        content: 'You already have an open ticket! Please close it before creating a new one.',
+        ephemeral: true
+      });
+      return;
+    }
+    
+    // Get form answers
+    const answers = {
+      ign: interaction.fields.getTextInputValue('ign'),
+      profile: interaction.fields.getTextInputValue('profile'),
+      networth: interaction.fields.getTextInputValue('networth'),
+      whyJoin: interaction.fields.getTextInputValue('why_join'),
+      activity: interaction.fields.getTextInputValue('activity')
+    };
+    
+    // Create ticket channel
+    const channelName = `application-guild-${user.username}`;
+    const channel = await guild.channels.create({
+      name: channelName,
+      type: ChannelType.GuildText,
+      parent: TICKET_CATEGORIES_CONFIG.APPLY_FOR_GUILD,
+      permissionOverwrites: [
+        {
+          id: guild.roles.everyone,
+          deny: ['ViewChannel'],
+        },
+        {
+          id: user.id,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.STAFF,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.ADMIN,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.MANAGER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        },
+        {
+          id: STAFF_ROLES.CO_OWNER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        },
+        {
+          id: STAFF_ROLES.OWNER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        }
+      ],
+    });
+    
+    // Create application embed
+    const embed = new EmbedBuilder()
+      .setTitle('Guild Application')
+      .setColor('Green')
+      .setTimestamp()
+      .addFields(
+        { name: '📝 Applicant', value: `<@${user.id}>`, inline: true },
+        { name: '📅 Applied', value: new Date().toLocaleDateString(), inline: true },
+        { name: '🎮 IGN', value: answers.ign, inline: true },
+        { name: '📋 SkyBlock Profile', value: answers.profile, inline: true },
+        { name: '💰 Net Worth', value: answers.networth, inline: true },
+        { name: '❓ Why Join?', value: answers.whyJoin.length > 1000 ? answers.whyJoin.slice(0, 1000) + '...' : answers.whyJoin, inline: false },
+        { name: '⏰ Activity', value: answers.activity.length > 1000 ? answers.activity.slice(0, 1000) + '...' : answers.activity, inline: false }
+      );
+    
+    // Ping staff roles
+    await channel.send(`<@&${STAFF_ROLES.OWNER}> <@&${STAFF_ROLES.CO_OWNER}> <@&${STAFF_ROLES.MANAGER}> New guild application received!`);
+    await channel.send({ embeds: [embed] });
+    
+    // Add close button for staff
+    const closeButton = new ButtonBuilder()
+      .setCustomId('close-ticket')
+      .setLabel('🔒 Close Application')
+      .setStyle(ButtonStyle.Danger);
+
+    const row = new ActionRowBuilder().addComponents(closeButton);
+    await channel.send({ components: [row] });
+    
+    await interaction.followUp({
+      content: `Guild application submitted successfully! ${channel}`,
+      ephemeral: true
+    });
+    
+  } catch (error) {
+    console.error('Error creating guild application ticket:', error);
+    await interaction.followUp({
+      content: 'An error occurred while creating your application.',
+      ephemeral: true
+    });
+  }
+}
+
+async function createCarrierApplicationTicket(interaction) {
+  try {
+    await interaction.deferReply({ ephemeral: true });
+    
+    const guild = interaction.guild;
+    const user = interaction.user;
+    
+    // Check if user already has an open ticket
+    if (await checkExistingTicket(guild, user.id)) {
+      await interaction.followUp({
+        content: 'You already have an open ticket! Please close it before creating a new one.',
+        ephemeral: true
+      });
+      return;
+    }
+    
+    // Get form answers
+    const answers = {
+      ign: interaction.fields.getTextInputValue('ign'),
+      specialization: interaction.fields.getTextInputValue('specialization'),
+      experience: interaction.fields.getTextInputValue('experience'),
+      availability: interaction.fields.getTextInputValue('availability'),
+      whyCarrier: interaction.fields.getTextInputValue('why_carrier')
+    };
+    
+    // Create ticket channel
+    const channelName = `application-carrier-${user.username}`;
+    const channel = await guild.channels.create({
+      name: channelName,
+      type: ChannelType.GuildText,
+      parent: TICKET_CATEGORIES_CONFIG.APPLY_FOR_CARRIER,
+      permissionOverwrites: [
+        {
+          id: guild.roles.everyone,
+          deny: ['ViewChannel'],
+        },
+        {
+          id: user.id,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.STAFF,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.ADMIN,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'],
+        },
+        {
+          id: STAFF_ROLES.MANAGER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        },
+        {
+          id: STAFF_ROLES.CO_OWNER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        },
+        {
+          id: STAFF_ROLES.OWNER,
+          allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages'],
+        }
+      ],
+    });
+    
+    // Create application embed
+    const embed = new EmbedBuilder()
+      .setTitle('Carrier Application')
+      .setColor('Purple')
+      .setTimestamp()
+      .addFields(
+        { name: '📝 Applicant', value: `<@${user.id}>`, inline: true },
+        { name: '📅 Applied', value: new Date().toLocaleDateString(), inline: true },
+        { name: '🎮 IGN', value: answers.ign, inline: true },
+        { name: '⚔️ Specialization', value: answers.specialization, inline: true },
+        { name: '📊 Experience & Stats', value: answers.experience.length > 1000 ? answers.experience.slice(0, 1000) + '...' : answers.experience, inline: false },
+        { name: '⏰ Availability', value: answers.availability.length > 1000 ? answers.availability.slice(0, 1000) + '...' : answers.availability, inline: false },
+        { name: '💭 Why Carrier?', value: answers.whyCarrier.length > 1000 ? answers.whyCarrier.slice(0, 1000) + '...' : answers.whyCarrier, inline: false }
+      );
+    
+    // Ping staff roles
+    await channel.send(`<@&${STAFF_ROLES.OWNER}> <@&${STAFF_ROLES.CO_OWNER}> <@&${STAFF_ROLES.MANAGER}> New carrier application received!`);
+    await channel.send({ embeds: [embed] });
+    
+    // Add close button for staff
+    const closeButton = new ButtonBuilder()
+      .setCustomId('close-ticket')
+      .setLabel('🔒 Close Application')
+      .setStyle(ButtonStyle.Danger);
+
+    const row = new ActionRowBuilder().addComponents(closeButton);
+    await channel.send({ components: [row] });
+    
+    await interaction.followUp({
+      content: `Carrier application submitted successfully! ${channel}`,
+      ephemeral: true
+    });
+    
+  } catch (error) {
+    console.error('Error creating carrier application ticket:', error);
+    await interaction.followUp({
+      content: 'An error occurred while creating your application.',
+      ephemeral: true
+    });
+  }
+}
+
 export async function reopenTicket(ticketId, interaction) {
   // Placeholder implementation for reopening tickets
   await interaction.followUp({ content: `Ticket ${ticketId} reopened successfully.` });
@@ -1712,6 +2442,11 @@ async function handleCarryTrackerUpdate(interaction) {
     
     // Calculate payment information
     const pricePerCarry = CARRY_PRICES[ticketType] || 0;
+    
+    // Debug logging for pricing issues
+    if (pricePerCarry === 0) {
+      console.log(`⚠️ Pricing Debug - Channel: "${channelName}", Detected Type: "${ticketType}", Price: ${pricePerCarry}`);
+    }
     const totalPayment = carriesNeeded * pricePerCarry;
     const paidAmount = carriesDone * pricePerCarry;
     const remainingPayment = totalPayment - paidAmount;
@@ -1805,142 +2540,166 @@ async function handleTicketClaim(interaction) {
       ticketType = 'T4 Enderman Bruiser';
       allowedRoles = [
         CARRIER_ROLES.T4_EMAN_BRUISER,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('t4-eman-sepulture')) {
       ticketType = 'T4 Enderman Sepulture';
       allowedRoles = [
         CARRIER_ROLES.T4_EMAN_SEPULTURE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('t2-blaze')) {
       ticketType = 'T2 Blaze';
       allowedRoles = [
         CARRIER_ROLES.T2_BLAZE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('t3-blaze')) {
       ticketType = 'T3 Blaze';
       allowedRoles = [
         CARRIER_ROLES.T3_BLAZE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('t4-blaze')) {
       ticketType = 'T4 Blaze';
       allowedRoles = [
         CARRIER_ROLES.T4_BLAZE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('ashfang')) {
       ticketType = 'Ashfang';
       allowedRoles = [
         CARRIER_ROLES.ASHFANG,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('basic-kuudra')) {
       ticketType = 'Basic Kuudra';
       allowedRoles = [
         CARRIER_ROLES.BASIC_KUUDRA,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('hot-kuudra')) {
       ticketType = 'Hot Kuudra';
       allowedRoles = [
         CARRIER_ROLES.HOT_KUUDRA,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('burning-kuudra')) {
       ticketType = 'Burning Kuudra';
       allowedRoles = [
         CARRIER_ROLES.BURNING_KUUDRA,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('fiery-kuudra')) {
       ticketType = 'Fiery Kuudra';
       allowedRoles = [
         CARRIER_ROLES.FIERY_KUUDRA,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('infernal-kuudra')) {
       ticketType = 'Infernal Kuudra';
       allowedRoles = [
         CARRIER_ROLES.INFERNAL_KUUDRA,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('f4-thorn')) {
       ticketType = 'F4 Thorn';
       allowedRoles = [
         CARRIER_ROLES.F4_DUNGEON,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('f5-livid')) {
       ticketType = 'F5 Livid';
       allowedRoles = [
         CARRIER_ROLES.F5_DUNGEON,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('f6-sadan')) {
       ticketType = 'F6 Sadan';
       allowedRoles = [
         CARRIER_ROLES.F6_DUNGEON,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('f7-necron')) {
       ticketType = 'F7 Necron';
       allowedRoles = [
         CARRIER_ROLES.F7_DUNGEON,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('m1')) {
       ticketType = 'M1';
       allowedRoles = [
         CARRIER_ROLES.M1_MASTERMODE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('m2')) {
       ticketType = 'M2';
       allowedRoles = [
         CARRIER_ROLES.M2_MASTERMODE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('m3')) {
       ticketType = 'M3';
       allowedRoles = [
         CARRIER_ROLES.M3_MASTERMODE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('m4-thorn')) {
       ticketType = 'M4 Thorn';
       allowedRoles = [
         CARRIER_ROLES.M4_MASTERMODE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('m5-livid')) {
       ticketType = 'M5 Livid';
       allowedRoles = [
         CARRIER_ROLES.M5_MASTERMODE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('m6-sadan')) {
       ticketType = 'M6 Sadan';
       allowedRoles = [
         CARRIER_ROLES.M6_MASTERMODE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('m7-necron')) {
       ticketType = 'M7 Necron';
       allowedRoles = [
         CARRIER_ROLES.M7_MASTERMODE,
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('dungeon')) {
       ticketType = 'Dungeon';
       allowedRoles = [
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else if (channelName.includes('crimson')) {
       ticketType = 'Crimson';
       allowedRoles = [
+        STAFF_ROLES.SBC_CARRIER,
         STAFF_ROLES.STAFF
       ];
     } else {
@@ -2601,6 +3360,13 @@ async function handleTicketClose(interaction) {
     
     // Check if user is staff
     isStaff = member.roles.cache.has(STAFF_ROLES.STAFF);
+    const isAdmin = member.roles.cache.has(STAFF_ROLES.ADMIN);
+    const isManager = member.roles.cache.has(STAFF_ROLES.MANAGER);
+    const isCoOwner = member.roles.cache.has(STAFF_ROLES.CO_OWNER);
+    const isOwner = member.roles.cache.has(STAFF_ROLES.OWNER);
+    
+    // Only manager rank and above can close tickets
+    const isManagerOrAbove = isManager || isCoOwner || isOwner;
     
     // Defer the reply to prevent timeout (moved up to fetch messages for permission check)
     await interaction.deferReply({ ephemeral: true });
@@ -2622,12 +3388,10 @@ async function handleTicketClose(interaction) {
       }
     }
     
-    // Check if user has permission to close (staff or claimer)
-    const isClaimerOrStaff = isStaff || (claimerUserId && member.user.id === claimerUserId);
-    
-    if (!isClaimerOrStaff) {
+    // Check if user has permission to close (only manager rank and above)
+    if (!isManagerOrAbove) {
       await interaction.editReply({
-        content: `❌ Only Staff or the person who claimed this ticket can close it.`
+        content: `❌ Only Manager rank and above can close tickets.`
       });
       return;
     }

@@ -15,7 +15,10 @@ export default {
           { name: 'Slayer', value: 'slayer' },
           { name: 'Crimson', value: 'crimson' },
           { name: 'Mastermode', value: 'mastermode' },
-          { name: 'Support', value: 'support' }
+          { name: 'Support', value: 'support' },
+          { name: 'Apply for Guild', value: 'apply-for-guild' },
+          { name: 'Apply for Carrier', value: 'apply-for-carrier' },
+          { name: 'Apply for Staff', value: 'apply-for-staff' }
         )
     ),
   async execute(interaction) {
@@ -36,7 +39,7 @@ export default {
       console.log('Requested category:', category);
       
       // Validate category
-      const validCategories = ['dungeon', 'slayer', 'crimson', 'mastermode', 'support'];
+      const validCategories = ['dungeon', 'slayer', 'crimson', 'mastermode', 'support', 'apply-for-guild', 'apply-for-carrier', 'apply-for-staff'];
       if (!validCategories.includes(category)) {
         return interaction.followUp({
           content: `Invalid category "${category}". Valid categories are: ${validCategories.join(', ')}`,

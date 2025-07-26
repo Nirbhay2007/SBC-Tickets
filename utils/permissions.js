@@ -8,11 +8,32 @@ export const hasTicketAccess = async (interaction, ticketChannel) => {
 
 export const isStaff = (member) => {
   return member.roles.cache.has(STAFF_ROLES.STAFF) || 
-         member.roles.cache.has(STAFF_ROLES.ADMIN);
+         member.roles.cache.has(STAFF_ROLES.ADMIN) ||
+         member.roles.cache.has(STAFF_ROLES.MANAGER) ||
+         member.roles.cache.has(STAFF_ROLES.CO_OWNER) ||
+         member.roles.cache.has(STAFF_ROLES.OWNER);
 };
 
 export const isAdmin = (member) => {
-  return member.roles.cache.has(STAFF_ROLES.ADMIN);
+  return member.roles.cache.has(STAFF_ROLES.ADMIN) ||
+         member.roles.cache.has(STAFF_ROLES.MANAGER) ||
+         member.roles.cache.has(STAFF_ROLES.CO_OWNER) ||
+         member.roles.cache.has(STAFF_ROLES.OWNER);
+};
+
+export const isManager = (member) => {
+  return member.roles.cache.has(STAFF_ROLES.MANAGER) ||
+         member.roles.cache.has(STAFF_ROLES.CO_OWNER) ||
+         member.roles.cache.has(STAFF_ROLES.OWNER);
+};
+
+export const isCoOwner = (member) => {
+  return member.roles.cache.has(STAFF_ROLES.CO_OWNER) ||
+         member.roles.cache.has(STAFF_ROLES.OWNER);
+};
+
+export const isOwner = (member) => {
+  return member.roles.cache.has(STAFF_ROLES.OWNER);
 };
 
 export const hasCarrierRole = (member, requiredRoles) => {

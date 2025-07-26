@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from 'discord.js';
+import { isStaff } from '../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -7,6 +8,15 @@ export default {
 
   async execute(interaction) {
     try {
+      // Check if user has staff permissions
+      if (!isStaff(interaction.member)) {
+        await interaction.reply({
+          content: '❌ **Access Denied** - This command requires staff permissions or higher.',
+          ephemeral: true
+        });
+        return;
+      }
+
       // Check if this is being used in a ticket channel
       if (!interaction.channel.name.startsWith('ticket-')) {
         await interaction.reply({

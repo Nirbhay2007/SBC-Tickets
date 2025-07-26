@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { getCarrierStats, formatCarrierStats, getCarryLeaderboard, getCategoryLeaderboard } from '../utils/carryTracker.js';
+import { isStaff } from '../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -79,6 +80,15 @@ export default {
         await interaction.reply({ embeds: [embed] });
         
       } else if (subcommand === 'user') {
+        // Check if user has staff permissions to view other users' stats
+        if (!isStaff(interaction.member)) {
+          await interaction.reply({
+            content: '❌ **Access Denied** - Only staff members can view other users\' statistics.',
+            ephemeral: true
+          });
+          return;
+        }
+        
         const targetUser = interaction.options.getUser('target');
         const statsDisplay = formatCarrierStats(targetUser.id, targetUser.username);
         
@@ -92,6 +102,14 @@ export default {
         await interaction.reply({ embeds: [embed] });
         
       } else if (subcommand === 'leaderboard') {
+        // Check if user has staff permissions to view leaderboards
+        if (!isStaff(interaction.member)) {
+          await interaction.reply({
+            content: '❌ **Access Denied** - Only staff members can view leaderboards.',
+            ephemeral: true
+          });
+          return;
+        }
         const category = interaction.options.getString('category') || 'overall';
         const limit = interaction.options.getInteger('limit') || 10;
         

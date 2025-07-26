@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { reopenTicket, getTicketStats } from '../utils/ticketUtils.js';
+import { isStaff } from '../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -20,6 +21,15 @@ export default {
     ),
   async execute(interaction) {
     try {
+      // Check if user has staff permissions
+      if (!isStaff(interaction.member)) {
+        await interaction.reply({
+          content: '❌ **Access Denied** - This command requires staff permissions or higher.',
+          ephemeral: true
+        });
+        return;
+      }
+
       await interaction.deferReply({ ephemeral: true });
       const subcommand = interaction.options.getSubcommand();
 

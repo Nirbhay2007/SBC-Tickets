@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { getTopCarriersThisMonth, getTopCarriersAllTime, getCarrierStats } from '../utils/simpleReviews.js';
+import { isStaff } from '../utils/permissions.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -19,10 +20,10 @@ export default {
         .setRequired(false)),
 
   async execute(interaction) {
-    // Check if user has admin permissions
-    if (!interaction.member.permissions.has('Administrator')) {
+    // Check if user has staff permissions
+    if (!isStaff(interaction.member)) {
       await interaction.reply({
-        content: '❌ This command is for administrators only.',
+        content: '❌ **Access Denied** - This command requires staff permissions or higher.',
         ephemeral: true
       });
       return;

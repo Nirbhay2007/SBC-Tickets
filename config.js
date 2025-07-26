@@ -1,6 +1,15 @@
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
 export const STAFF_ROLES = {
   STAFF: process.env.STAFF_ROLE,
-  ADMIN: process.env.ADMIN_ROLE
+  ADMIN: process.env.ADMIN_ROLE,
+  MANAGER: process.env.MANAGER_ROLE,
+  CO_OWNER: process.env.CO_OWNER_ROLE,
+  OWNER: process.env.OWNER_ROLE,
+  SBC_CARRIER: process.env.SBC_CARRIER_ROLE
 };
 
 export const LOGGING_CONFIG = {
@@ -10,6 +19,17 @@ export const LOGGING_CONFIG = {
   DUNGEON_LOGS_CHANNEL: process.env.DUNGEON_LOGS_CHANNEL,
   CRIMSON_LOGS_CHANNEL: process.env.CRIMSON_LOGS_CHANNEL,
   MASTERMODE_LOGS_CHANNEL: process.env.MASTERMODE_LOGS_CHANNEL,
+};
+
+export const TICKET_CATEGORIES_CONFIG = {
+  SLAYER: process.env.SLAYER_CATEGORY,
+  DUNGEON: process.env.DUNGEON_CATEGORY,
+  MASTERMODE: process.env.MASTERMODE_CATEGORY,
+  CRIMSON: process.env.CRIMSON_CATEGORY,
+  SUPPORT: process.env.SUPPORT_CATEGORY,
+  APPLY_FOR_GUILD: process.env.APPLY_FOR_GUILD_CATEGORY,
+  APPLY_FOR_CARRIER: process.env.APPLY_FOR_CARRIER_CATEGORY,
+  APPLY_FOR_STAFF: process.env.APPLY_FOR_STAFF_CATEGORY,
 };
 
 export const CARRIER_ROLES = {
@@ -47,6 +67,9 @@ export const TICKET_CATEGORIES = {
   CRIMSON: 'Crimson',
   MASTERMODE: 'Mastermode',
   SUPPORT: 'Support',
+  APPLY_FOR_GUILD: 'Apply for Guild',
+  APPLY_FOR_CARRIER: 'Apply for Carrier',
+  APPLY_FOR_STAFF: 'Apply for Staff',
 };
 
 export const CARRY_PRICES = {
