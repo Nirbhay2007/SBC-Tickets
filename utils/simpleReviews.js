@@ -3,28 +3,45 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const reviewsFile = path.join(__dirname, '..', 'data', 'reviews.json');
+const REVIEWS_FILE = path.join(__dirname, '..', 'data', 'reviews.json');
 
 // Ensure data directory exists
-const dataDir = path.dirname(reviewsFile);
+const dataDir = path.dirname(REVIEWS_FILE);
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
 // Initialize reviews file if it doesn't exist
-if (!fs.existsSync(reviewsFile)) {
-  fs.writeFileSync(reviewsFile, JSON.stringify({ reviews: [] }, null, 2));
+if (!fs.existsSync(REVIEWS_FILE)) {
+  fs.writeFileSync(REVIEWS_FILE, JSON.stringify({ reviews: [] }, null, 2));
 }
 
 // Read reviews from file
-export function getReviews() {
+function loadReviews() {
   try {
-    const data = fs.readFileSync(reviewsFile, 'utf8');
-    return JSON.parse(data);
+    const data = fs.readFileSync(REVIEWS_FILE, 'utf8');
+    return JSON.parse(data).reviews || [];
   } catch (error) {
-    console.error('Error reading reviews:', error);
-    return { reviews: [] };
+    console.error('Error loading reviews:', error);
+    return [];
   }
+}
+
+// Export the loadReviews function
+export function getReviews() {
+  return loadReviews();
+}
+
+// Helper function to get rating value
+function getRatingValue(rating) {
+  const ratingMap = {
+    '⭐': 1,
+    '⭐⭐': 2,
+    '⭐⭐⭐': 3,
+    '⭐⭐⭐⭐': 4,
+    '⭐⭐⭐⭐⭐': 5
+  };
+  return ratingMap[rating] || 0;
 }
 
 // Check if a customer can submit a review (2-hour cooldown)

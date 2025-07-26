@@ -1800,15 +1800,15 @@ async function createSupportTicketChannel(interaction, supportType) {
           allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory']
         },
         {
-          id: config.ROLES.HELPER,
+          id: STAFF_ROLES.ADMIN,
           allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages']
         },
         {
-          id: config.ROLES.STAFF,
+          id: STAFF_ROLES.STAFF,
           allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages']
         },
         {
-          id: config.ROLES.OWNER,
+          id: STAFF_ROLES.OWNER,
           allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'ManageMessages']
         }
       ]
@@ -1900,8 +1900,8 @@ async function createSupportTicketChannel(interaction, supportType) {
       );
 
     // Ping helpers and staff
-    const helperRole = guild.roles.cache.get(config.ROLES.HELPER);
-    const staffRole = guild.roles.cache.get(config.ROLES.STAFF);
+    const helperRole = guild.roles.cache.get(STAFF_ROLES.ADMIN);
+    const staffRole = guild.roles.cache.get(STAFF_ROLES.STAFF);
     
     let pingMessage = `New ${supportTypeFormatted} support ticket created by ${member.user}!`;
     if (helperRole) pingMessage += ` ${helperRole}`;
